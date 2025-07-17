@@ -14,12 +14,13 @@ app.delete("/banner/:id", bannerall.deleteBanner);
 
 //all product rotes
 app.get("/product", product.getAllProduct);
-app.post("/product", upload.single("product"), convertToWebp, product.createProduct);
-app.put("/product/:id", upload.single("product"), convertToWebp, product.updateProduct);
+app.post("/product", upload.single("file"), convertToWebp, product.createProduct);
+app.put("/product/:id", upload.single("file"), convertToWebp, product.updateProduct);
 app.delete("/product/:id", product.deleteProduct);
 
 // all review rotes
 app.get("/rating", rating.getAllReviews)
+app.get("/ratinglimit", rating.getlimitReviews)
 app.post("/rating", rating.review)
 app.put("/rating/:id", rating.updateReview)
 app.delete("/rating/:id", rating.deleteReview)

@@ -117,4 +117,22 @@ const getAllReviews = async (req, res) => {
     });
   }
 };
-module.exports = { review, updateReview, deleteReview, getAllReviews };
+const getlimitReviews = async (req, res) => {
+  try {
+    const reviews = await reviewModel.find().sort({ createdAt: -1 }).limit(6);
+    return Response.Success({
+      res,
+      status: 200,
+      message: "Fetched all reviews",
+      data: reviews,
+    });
+  } catch (error) {
+    return Response.Error({
+      res,
+      status: 500,
+      message: "Failed to fetch reviews",
+      error: error.message,
+    });
+  }
+};
+module.exports = { review, updateReview, deleteReview,getlimitReviews, getAllReviews };

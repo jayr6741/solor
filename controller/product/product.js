@@ -3,10 +3,16 @@ const productModel = require("../../models/productschema");
 
 const createProduct = async (req, res) => {
   try {
-    const { title, decription } = req.body;
+    const { title, description } = req.body;
+
     const image = req.file.filename;
+    // console.log( image);
     let imageUrl = `http://localhost:3030/uploads/images/${req.file.filename}`;
-    if (!image || !title || !decription) {
+    console.log(image);
+    console.log(title);
+    console.log(description);
+
+    if (!image || !title || !description) {
       return Response.Error({
         res,
         status: 400,
@@ -16,7 +22,7 @@ const createProduct = async (req, res) => {
     const createproduct = await productModel.create({
       image: imageUrl,
       title,
-      decription,
+      description,
     });
     //   console.log("createproduct", createproduct);
     return Response.Success({
@@ -35,7 +41,7 @@ const createProduct = async (req, res) => {
 };
 const getAllProduct = async (req, res) => {
   try {
-    const product = await productModel.find();
+    const product = await productModel.find().sort({ createdAt: -1 });
     if (!product || product.length === 0) {
       return Response.Error({
         res,
@@ -59,7 +65,7 @@ const getAllProduct = async (req, res) => {
 };
 const updateProduct = async (req, res) => {
   try {
-    const { title, decription } = req.body;
+    const { title, description } = req.body;
     const { id } = req.params;
     const file = req.file;
 
@@ -67,34 +73,37 @@ const updateProduct = async (req, res) => {
       return Response.Error({
         res,
         status: 400,
-        message: "product ID is required",
+        message: "Product ID is required",
       });
     }
 
+    // Prepare data to update
     const updateData = {};
+    // console.log('updateData', updateData)
     if (title) updateData.title = title;
-    if (decription) decription    .title = title;
+    if (description) updateData.description = description;
     if (file) {
-      updateData.image = `http://localhost:3030/uploads/images/${file.filename}`;
-    }
-
-    const updatedproduct = await productModel.findByIdAndUpdate(id, req.body, {
+      const imageUrl = `http://localhost:3030/uploads/images/${file.filename}`;
+      updateData.image = imageUrl;
+    } 
+    // Perform update
+    const updatedProduct = await productModel.findByIdAndUpdate(id, updateData, {
       new: true,
     });
-
-    if (!updatedproduct) {
+    // console.log('updatedProduct', updatedProduct)
+    if (!updatedProduct) {
       return Response.Error({
         res,
         status: 404,
-        message: "product not found",
+        message: "Product not found",
       });
     }
 
     return Response.Success({
       res,
       status: 200,
-      message: "product updated successfully",
-      data: updatedproduct,
+      message: "Product updated successfully",
+      data: updatedProduct,
     });
   } catch (error) {
     return Response.Error({
@@ -104,6 +113,7 @@ const updateProduct = async (req, res) => {
     });
   }
 };
+
 const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
