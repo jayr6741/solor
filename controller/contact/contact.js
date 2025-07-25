@@ -13,10 +13,10 @@ const createcontact = async (req, res) => {
             })
         }
         const createdata = await contactModel.create({ name, email, number, title, message })
-        if (createdata.status === 0) {
+        if (createdata.status === 400) {
             return Response.Error({
                 res,
-                status: 400,
+                status: 401,
                 message: "contact us failed"
             })
         }

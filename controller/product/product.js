@@ -7,7 +7,7 @@ const createProduct = async (req, res) => {
 
     const image = req.file.filename;
     // console.log( image);
-    let imageUrl = `http://localhost:3030/uploads/images/${req.file.filename}`;
+    let imageUrl = `http://192.168.29.36:3030/uploads/images/${req.file.filename}`;
     console.log(image);
     console.log(title);
     console.log(description);
@@ -83,7 +83,7 @@ const updateProduct = async (req, res) => {
     if (title) updateData.title = title;
     if (description) updateData.description = description;
     if (file) {
-      const imageUrl = `http://localhost:3030/uploads/images/${file.filename}`;
+      const imageUrl = `http://192.168.29.36:3030/uploads/images/${file.filename}`;
       updateData.image = imageUrl;
     } 
     // Perform update

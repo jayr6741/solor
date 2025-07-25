@@ -41,23 +41,50 @@ const upload = multer({
 });
 
 const convertToWebp = async (req, res, next) => {
-  if (!req.file || !isImage(req.file.mimetype)) return next();
-
-  const originalPath = path.join(imagePath, req.file.filename);
-  const webpFilename = req.file.filename.replace(/\.\w+$/, "") + ".webp";
-  const webpPath = path.join(imagePath, webpFilename);
-
   try {
-    await sharp(originalPath)
-      .webp({ quality: 80 })
-      .toFile(webpPath);
+    // Convert single file (upload.single)
+    if (req.file && isImage(req.file.mimetype)) {
+      const originalPath = path.join(imagePath, req.file.filename);
+      const webpFilename = req.file.filename.replace(/\.\w+$/, "") + ".webp";
+      const webpPath = path.join(imagePath, webpFilename);
 
-    await fs.promises.unlink(originalPath);
+      await sharp(originalPath)
+        .webp({ quality: 80 })
+        .toFile(webpPath);
 
-    req.file.filename = webpFilename;
-    req.file.path = webpPath;
-    req.file.mimetype = "image/webp";
-    req.file.url = `${req.protocol}://${req.get("host")}/uploads/images/${webpFilename}`;
+      await fs.promises.unlink(originalPath);
+
+      req.file.filename = webpFilename;
+      req.file.path = webpPath;
+      req.file.mimetype = "image/webp";
+      req.file.url = `${req.protocol}://${req.get("host")}/uploads/images/${webpFilename}`;
+    }
+
+    // Convert multiple files (upload.fields)
+    if (req.files) {
+      for (const fieldName in req.files) {
+        const files = req.files[fieldName];
+
+        for (let file of files) {
+          if (!isImage(file.mimetype)) continue;
+
+          const originalPath = path.join(imagePath, file.filename);
+          const webpFilename = file.filename.replace(/\.\w+$/, "") + ".webp";
+          const webpPath = path.join(imagePath, webpFilename);
+
+          await sharp(originalPath)
+            .webp({ quality: 80 })
+            .toFile(webpPath);
+
+          await fs.promises.unlink(originalPath);
+
+          file.filename = webpFilename;
+          file.path = webpPath;
+          file.mimetype = "image/webp";
+          file.url = `${req.protocol}://${req.get("host")}/uploads/images/${webpFilename}`;
+        }
+      }
+    }
 
     next();
   } catch (err) {
@@ -65,7 +92,6 @@ const convertToWebp = async (req, res, next) => {
     return res.status(500).json({ message: "Image conversion failed" });
   }
 };
-
 module.exports = {
   upload,
   convertToWebp,

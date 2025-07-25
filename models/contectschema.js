@@ -21,10 +21,10 @@ const contact = new mongoose.Schema(
     },
     title: {
       type: String,
-      enum: {
-        values: ["Home", "Business", "Farm", "Factory", "Other"],
-        message: "Title must be one of Home, Business, Farm, Factory, Other",
-      },
+      // enum: {
+      //   values: ["Home", "Business", "Farm", "Factory", "Other"],
+      //   message: "Title must be one of Home, Business, Farm, Factory, Other",
+      // },
     },
     message: {
       type: String,
